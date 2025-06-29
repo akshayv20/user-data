@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useFetchData } from "./hooks/useFetchData";
 import { sortByKey } from "./utils/sortHelper";
@@ -19,8 +19,8 @@ const DraggableTable = () => {
   const [currentPage, setCurrentPage] = useState(
     parseInt(localStorage.getItem("page")) || 1
   );
-  const [entriesPerPage, setEntriesPerPage] = useState(
-    parseInt(localStorage.getItem("entriesPerPage")) || 5
+  const [limit, setLimit] = useState(
+    parseInt(localStorage.getItem("limit")) || 5
   );
   const [sortConfig, setSortConfig] = useState(
     JSON.parse(localStorage.getItem("sortConfig")) || {
@@ -42,8 +42,8 @@ const DraggableTable = () => {
   }, [currentPage]);
 
   useEffect(() => {
-    localStorage.setItem("entriesPerPage", entriesPerPage);
-  }, [entriesPerPage]);
+    localStorage.setItem("limit", limit);
+  }, [limit]);
 
   useEffect(() => {
     localStorage.setItem("sortConfig", JSON.stringify(sortConfig));
@@ -56,16 +56,12 @@ const DraggableTable = () => {
     setSortConfig({ key: col, direction });
   };
 
-  const sortedData = React.useMemo(() => {
+  const sortedData = useMemo(() => {
     return sortByKey(data, sortConfig);
   }, [data, sortConfig]);
 
-  const paginatedData = getPaginatedData(
-    sortedData,
-    currentPage,
-    entriesPerPage
-  );
-  const totalPages = getTotalPages(sortedData.length, entriesPerPage);
+  const paginatedData = getPaginatedData(sortedData, currentPage, limit);
+  const totalPages = getTotalPages(sortedData.length, limit);
 
   if (loading) return <p className='loading'>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
@@ -77,13 +73,13 @@ const DraggableTable = () => {
         <div className='entries-per-page'>
           Show &nbsp;
           <select
-            value={entriesPerPage}
+            value={limit}
             onChange={(e) => {
-              setEntriesPerPage(parseInt(e.target.value));
+              setLimit(parseInt(e.target.value));
               setCurrentPage(1);
             }}
           >
-            {[5, 10, 20].map((n) => (
+            {[5, 10, 20, 40].map((n) => (
               <option key={n} value={n}>
                 {n}
               </option>
