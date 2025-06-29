@@ -7,7 +7,6 @@ function App() {
   return (
     <Provider store={store}>
       <div className='App'>
- 
         <DraggableTable />
       </div>
     </Provider>
