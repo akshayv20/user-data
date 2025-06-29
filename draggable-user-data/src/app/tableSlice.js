@@ -1,23 +1,4 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
-
-import { dummyData } from "../Asset/data";
-
-// Async thunk with fallback logic
-export const fetchData = createAsyncThunk(
-  "table/fetchData",
-  async (_, { rejectWithValue }) => {
-    try {
-      const response = await axios.get(
-        "https://run.mocky.io/v3/01238aa1-35de-4015-9add-6d3e1c5e2b30"
-      );
-      return response.data;
-    } catch (error) {
-      console.warn("Error fetching data:", error);
-      return dummyData;
-    }
-  }
-);
+import { createSlice } from "@reduxjs/toolkit";
 
 const tableSlice = createSlice({
   name: "table",
@@ -26,20 +7,21 @@ const tableSlice = createSlice({
     loading: false,
     error: null
   },
-  extraReducers: (builder) => {
-    builder
-      .addCase(fetchData.pending, (state) => {
-        state.loading = true;
-      })
-      .addCase(fetchData.fulfilled, (state, action) => {
-        state.loading = false;
-        state.data = action.payload;
-      })
-      .addCase(fetchData.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.error.message;
-      });
+  reducers: {
+    fetchStart(state) {
+      state.loading = true;
+      state.error = null;
+    },
+    fetchSuccess(state, action) {
+      state.loading = false;
+      state.data = action.payload;
+    },
+    fetchFailure(state, action) {
+      state.loading = false;
+      state.error = action.payload;
+    }
   }
 });
 
+export const { fetchStart, fetchSuccess, fetchFailure } = tableSlice.actions;
 export default tableSlice.reducer;
