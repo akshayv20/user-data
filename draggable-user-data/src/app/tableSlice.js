@@ -1,27 +1,27 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const tableSlice = createSlice({
-  name: "table",
+  name: "dragTable",
   initialState: {
     data: [],
     loading: false,
     error: null
   },
   reducers: {
-    fetchStart(state) {
+    onStart(state) {
       state.loading = true;
       state.error = null;
     },
-    fetchSuccess(state, action) {
+    onSuccess(state, action) {
       state.loading = false;
       state.data = action.payload;
     },
-    fetchFailure(state, action) {
+    onFailure(state, action) {
       state.loading = false;
       state.error = action.payload;
     }
   }
 });
 
-export const { fetchStart, fetchSuccess, fetchFailure } = tableSlice.actions;
+export const { onStart, onSuccess, onFailure } = tableSlice.actions;
 export default tableSlice.reducer;

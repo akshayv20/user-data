@@ -1,10 +1,11 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useFetchData } from "./hooks/useFetchData";
-import { sortByKey } from "./utils/sortHelper";
-import { handleDragStart, handleDrop } from "./utils/dragUtils";
-import { getPaginatedData, getTotalPages } from "./utils/paginationHelper";
-import "./DraggableTable.css";
+import { useFetchData } from "../hooks/useFetchData";
+import { sortByKey } from "../utils/sortHelper";
+import { handleDragStart, handleDrop } from "../utils/dragUtils";
+import { getPaginatedData, getTotalPages } from "../utils/paginationHelper";
+import "./styles.css";
+import PaginationControls from "./PaginationControls";
 
 const DraggableTable = () => {
   const dispatch = useDispatch();
@@ -51,9 +52,8 @@ const DraggableTable = () => {
 
   const handleSort = (col) => {
     if (col !== "age") return;
-    const direction =
-      sortConfig.key === col && sortConfig.direction === "asc" ? "desc" : "asc";
-    setSortConfig({ key: col, direction });
+    const isAsc = sortConfig.direction === "asc";
+    setSortConfig({ key: col, direction: isAsc ? "desc" : "asc" });
   };
 
   const sortedData = useMemo(() => {
@@ -69,25 +69,6 @@ const DraggableTable = () => {
   return (
     <div className='table-wrapper'>
       <h1 className='table-title'>Draggable Table</h1>
-      <div className='pagination-controls top'>
-        <div className='entries-per-page'>
-          Show &nbsp;
-          <select
-            value={limit}
-            onChange={(e) => {
-              setLimit(parseInt(e.target.value));
-              setCurrentPage(1);
-            }}
-          >
-            {[5, 10, 20, 40].map((n) => (
-              <option key={n} value={n}>
-                {n}
-              </option>
-            ))}
-          </select>
-          &nbsp; entries per page
-        </div>
-      </div>
 
       <table className='data-table'>
         <thead>
@@ -112,7 +93,7 @@ const DraggableTable = () => {
               >
                 {col.charAt(0).toUpperCase() + col.slice(1)}
                 {col === "age" && sortConfig.key === "age" && (
-                  <span>{sortConfig.direction === "asc" ? " 🔼" : " 🔽"}</span>
+                  <span>{sortConfig.direction === "asc" ? "↑" : "↓"}</span>
                 )}
               </th>
             ))}
@@ -129,25 +110,13 @@ const DraggableTable = () => {
         </tbody>
       </table>
 
-      <div className='pagination-controls'>
-        <button
-          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-          disabled={currentPage === 1}
-        >
-          Previous
-        </button>
-        <span>
-          Page {currentPage} of {totalPages}
-        </span>
-        <button
-          onClick={() =>
-            setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-          }
-          disabled={currentPage === totalPages}
-        >
-          Next
-        </button>
-      </div>
+      <PaginationControls
+        currentPage={currentPage}
+        totalPages={totalPages}
+        limit={limit}
+        setLimit={setLimit}
+        setCurrentPage={setCurrentPage}
+      />
     </div>
   );
 };

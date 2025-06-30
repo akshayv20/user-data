@@ -1,8 +1,8 @@
 
 export function getPaginatedData(data, currentPage, limit) {
-  const start = (currentPage - 1) * limit;
-  const end = start + limit;
-  return data.slice(start, end);
+  const startIndex = (currentPage - 1) * limit;
+  const endIndex = startIndex + limit;
+  return data.slice(startIndex, endIndex);
 }
 
 export function getTotalPages(size, limit) {
